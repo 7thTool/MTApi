@@ -88,27 +88,6 @@ MTApi是一套支持Python/C/C++/http/websocket的行情、交易、指标、策
 除了基于MTStation的图形化启动方式外，也可以在任意目录下创建run.py，写入以下示例代码：
 
 ```Python
-from vnpy.event import EventEngine
-from vnpy.trader.engine import MainEngine
-from vnpy.trader.ui import MainWindow, create_qapp
-from vnpy.gateway.ctp import CtpGateway
-from vnpy.app.cta_strategy import CtaStrategyApp
-
-def main():
-    """Start VN Trader"""
-    qapp = create_qapp()
-
-    event_engine = EventEngine()
-    main_engine = MainEngine(event_engine)
-    
-    main_engine.add_gateway(CtpGateway)
-    main_engine.add_app(CtaStrategyApp)
-
-    main_window = MainWindow(main_engine, event_engine)
-    main_window.showMaximized()
-
-    qapp.exec()
-
 if __name__ == "__main__":
     main()
 ```
