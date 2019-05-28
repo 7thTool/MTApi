@@ -1,0 +1,51 @@
+{
+    "name": "",
+    "work_path": "",
+    "data_path": "",
+    "log_path": "log",
+    "up_mode": 1,
+    "down_mode": 1,
+    "rpc": [
+        {
+            "ip": "127.0.0.1",
+            "port": 8848
+        }
+    ],
+    "ipc": {
+        "ipc_client": {
+            "name": "ipc_client",
+            "max_msg_num": 1000,
+            "max_msg_size": 10240
+        },
+        "ipc_server": {
+            "name": "ipc_server",
+            "max_msg_num": 1000,
+            "max_msg_size": 10240
+        }
+    },
+    "md_shm": {
+        "md_market_data": {
+            "name": "md_market_data",
+            "max_mem_size": 1024000000
+        }
+    },
+    "server": {
+        "port": 8868,
+        "io_thread_num": "5",
+        "keep_alive": "30"
+    },
+    "mdcfg": {
+        "work_mode": 1,
+        "name": "CTPMarket",
+        "user": "113334",
+        "ip": "127.0.0.1",
+        "port": 8848
+    },
+    "module": [
+        {
+            "name": "CTPApi",
+            "data": {
+            }
+        }
+    ]
+}
