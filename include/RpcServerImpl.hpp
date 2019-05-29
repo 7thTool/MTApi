@@ -25,70 +25,34 @@ public:
 	{
 	}
 
-	inline void post_add_exchange(const std::vector<ExchangeInfoPtr> exchanges)
+	inline std::string build_packet(const std::string& method, IDataSet* dataset)
 	{
 		std::string str;
-		std::stringstream ss;
-		ss << R"([)";
-		size_t i = 0;
-		for(auto exchange : exchanges)
-		{
-			if(i++ != 0) {
-				ss << R"(,)";
-			}
-			ExchangeSetWrapper<IDataSet,ExchangeInfo*,ProductInfo*,CommodityInfo*> exchange_set(exchange.get());
-			DataSetConvEx conv;
-			boost::property_tree::ptree tmp;
-			conv.to_xml(tmp, &exchange_set);
-			CDataSet dataset;
-			conv.from_xml(tmp, &dataset);
-			tmp.clear();
-			conv.to_xml(tmp, &dataset);
-			std::string str;
-			XUtil::json_to_str(str,tmp);
-			ss << conv.to_json(&exchange_set);
-		}
-		ss << R"(])";
-        build_request(str, "on_add_exchange", ss.str());
-		sendRemoteNotification(0, str);
-	}
-
-	inline void post_remove_exchange(const std::vector<ExchangeInfoPtr> exchanges)
-	{
-		std::string str;
-		std::stringstream ss;
-		ss << R"([)";
-		size_t i = 0;
-		for (auto exchange : exchanges)
-		{
-			if (i++ != 0) {
-				ss << R"(,)";
-			}
-			ExchangeSetWrapper<IDataSet, ExchangeInfo*, ProductInfo*, CommodityInfo*> exchange_set(exchange.get());
-			DataSetConvEx conv;
-			ss << conv.to_json(&exchange_set);
-		}
-		ss << R"(])";
-		build_request(str, "on_remove_exchange", ss.str());
-		sendRemoteNotification(0, str);
-	}
-
-	inline void post_commodity_update(const CommodityInfoPtr& commodity)
-	{
-		std::string str;
-		CommoditySetWrapper<IDataSet, CommodityInfo*> commodity_set(commodity.get());
 		DataSetConvEx conv;
-		build_request(str, "on_commodity_update", conv.to_json(&commodity_set));
-		sendRemoteNotification(0, str);
+			// boost::property_tree::ptree tmp;
+			// conv.to_xml(tmp, dataset + i);
+			// CDataSet tmpset;
+			// conv.from_xml(tmp, &tmpset);
+			// tmp.clear();
+			// conv.to_xml(tmp, &tmpset);
+			// XUtil::json_to_str(str,tmp);
+        build_request(str, method, conv.to_json(dataset));
+		return str;
 	}
 
-	inline void post_commodity_status(const CommodityInfoPtr& commodity)
+	void post_exchange_update(IDataSet* dataset)
 	{
-		std::string str;
-		CommoditySetWrapper<IDataSet, CommodityInfo*> commodity_set(commodity.get());
-		DataSetConvEx conv;
-		build_request(str, "on_commodity_status", conv.to_json(&commodity_set));
-		sendRemoteNotification(0, str);
+		sendRemoteNotification(0, build_packet("on_exchange_update", dataset));
+	}
+
+	inline void post_product_update(IDataSet* dataset)
+	{
+		sendRemoteNotification(0, build_packet("on_product_update", dataset));
+	}
+
+	inline void post_commodity_update(IDataSet* dataset)
+	{
+		sendRemoteNotification(0, build_packet("on_commodity_update", dataset));
 	}
 
 	inline void post_response(size_t peer, size_t id, const std::shared_ptr<boost::property_tree::ptree>& data, bool error = false)

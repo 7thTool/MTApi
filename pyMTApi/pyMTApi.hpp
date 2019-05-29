@@ -548,9 +548,9 @@ public:
         return pyDataSet(MakeBufferSetPtr(name, nullptr, calcdata.get(), flag));
     }
 
-	virtual void on_exchange_update(IDataSet* dataset, UpdateFlag flag);
-	virtual void on_product_update(IDataSet* dataset, UpdateFlag flag);
-    virtual void on_commodity_update(IDataSet* dataset, UpdateFlag flag);
+	virtual void on_exchange_update(IDataSet* dataset);
+	virtual void on_product_update(IDataSet* dataset);
+    virtual void on_commodity_update(IDataSet* dataset);
 
     std::vector<pyStrDataSet> Ref_All_User()
     {

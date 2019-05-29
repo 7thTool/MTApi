@@ -240,10 +240,13 @@ protected:
 		trading_day_ = date;
 		if(old_trading_day_ != trading_day_) {
 			if(!exchanges_.empty()) {
+				for(auto it : exchangesets_) {
+					srv_->on_exchange_update(it.second.get());
+				}
+
 				clear_exchangeset();
 				MarketDataSetEx::Instance().RemoveExchange(&exchanges_[0], exchanges_.size());
 				//SHMMarketData::instance().remove_exchange_ptr(&exchanges_[0], exchanges_.size());
-				srv_->on_remove_exchange(exchanges_);
 			}
 			ResetAllState();
 		}
@@ -257,10 +260,13 @@ protected:
 			uint32_t holiday[] = { 20180101 };
 			MarketDataSetEx::Instance().AddExchange(trading_day_.c_str(), &exchanges_[0], exchanges_.size()
 			, &products_[0], products_.size(), &commoditys_[0], commoditys_.size());
-			init_exchangeset();
 			//SHMMarketData::instance().init_exchange_ptr(&exchanges_[0], exchanges_.size()
 			//, &products_[0], products_.size(), &commoditys_[0], commoditys_.size());
-			srv_->on_add_exchange(exchanges_);
+			init_exchangeset();
+			
+			for(auto it : exchangesets_) {
+				srv_->on_exchange_update(it.second.get());
+			}
 		}
 		//重新订阅行情
 		//等待行情也连上
@@ -278,11 +284,8 @@ protected:
 		{
 			if (IsStateful(CTP_STAT_MAX)) {
 				MarketDataSetEx::Instance().UpdateMarket(commodity.get());
-				// auto shm_commodity = SHMMarketData::instance().get_commodity(commodity->Exchange, commodity->Product, commodity->Code);
-				// if (shm_commodity) {
-				// 	shm_commodity->UpdateMarket(commodity);
-				// }
-				srv_->on_commodity_update(commodity);
+				CommoditySetWrapper<IDataSet, CommodityInfo*> commodity_set(commodity.get());
+				srv_->on_commodity_update(&commodity_set);
 			}
 		}
 	}
@@ -293,34 +296,27 @@ protected:
 		{
 			if(update->Code[0]) {
 				CommodityInfoPtr commodity = Base::on_commodity_status(update);
-				// if (IsStateful(CTP_STAT_MAX)) {
-				// 	auto shm_commodity = SHMMarketData::instance().get_commodity(commodity->Exchange, commodity->Product, commodity->Code);
-				// 	if (shm_commodity) {
-				// 		shm_commodity->UpdateStatus(commodity);
-				// 	}
-				// }
+				if (IsStateful(CTP_STAT_MAX)) {
+					MarketDataSetEx::Instance().UpdateStatus(update.get());
+					CommoditySetWrapper<IDataSet, CommodityInfo*> commodity_set(commodity.get());
+					srv_->on_commodity_update(&commodity_set);
+				}
 			}
 			else if (update->Product[0]) {
-				ProductInfoPtr commodity = Base::on_product_status(update);
-				// if (IsStateful(CTP_STAT_MAX)) {
-				// 	auto shm_product = SHMMarketData::instance().get_product(commodity->Exchange, commodity->Product);
-				// 	if (shm_product) {
-				// 		shm_product->UpdateStatus(commodity);
-				// 	}
-				// }
+				ProductInfoPtr product = Base::on_product_status(update);
+				if (IsStateful(CTP_STAT_MAX)) {
+					MarketDataSetEx::Instance().UpdateStatus(update.get());
+					ProductSetWrapper<IDataSet, ProductInfo*, CommodityInfo*> product_set(product.get());
+					srv_->on_product_update(&product_set);
+				}
 			}
 			else {
-				ExchangeInfoPtr commodity = Base::on_exchange_status(update);
-				// if (IsStateful(CTP_STAT_MAX)) {
-				// 	auto shm_exchange = SHMMarketData::instance().get_exchange(commodity->Exchange);
-				// 	if (shm_exchange) {
-				// 		shm_exchange->UpdateStatus(commodity);
-				// 	}
-				// }
-			}
-			if (IsStateful(CTP_STAT_MAX)) {
-				MarketDataSetEx::Instance().UpdateStatus(update.get());
-				srv_->on_commodity_status(update);
+				ExchangeInfoPtr exchange = Base::on_exchange_status(update);
+				if (IsStateful(CTP_STAT_MAX)) {
+					MarketDataSetEx::Instance().UpdateStatus(update.get());
+					ExchangeSetWrapper<IDataSet, ExchangeInfo*, ProductInfo*, CommodityInfo*> exchange_set(exchange.get());
+					srv_->on_exchange_update(&exchange_set);
+				}
 			}
 		}
 	}

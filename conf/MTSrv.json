@@ -4,8 +4,13 @@
     "data_path": "",
     "log_path": "log",
     "up_mode": 1,
-    "down_mode": 1,
-    "rpc": [
+    "down_mode": 0,
+    "rpc_up": {
+        "port": 8848,
+        "io_thread_num": "5",
+        "keep_alive": "30"
+    },
+    "rpc_down": [
         {
             "ip": "127.0.0.1",
             "port": 8848
@@ -45,6 +50,19 @@
         {
             "name": "CTPApi",
             "data": {
+                "UserID": "113334",
+                "Password": "861116",
+                "BrokerID": "9999",
+                "FrontAddress": [
+                    "tcp://180.168.146.187:10000",
+                    "tcp://180.168.146.187:10001",
+                    "tcp://218.202.237.33:10002"
+                ],
+                "MdFrontAddress": [
+                    "tcp://180.168.146.187:10010",
+                    "tcp://180.168.146.187:10011",
+                    "tcp://218.202.237.33:10012"
+                ]
             }
         }
     ]

@@ -22,8 +22,6 @@ public:
 	static size_t Ref_All_Product(IProductSet** product, size_t max_count);
 	static size_t Ref_All_Commodity(ICommoditySet** commodity, size_t max_count);
 
-	static void OnAddExchange(const char* exchange);
-	static void OnRemoveExchange(const char* exchange);
 	static void OnUpdateExchange(const char* exchange);
 	static void OnUpdateProduct(const char* exchange, const char* product);
 	static void OnUpdateMarket(const char* exchange, const char* product, const char* code);

@@ -5,9 +5,20 @@
     "log_path": "log",
     "up_mode": 0,
     "down_mode": 1,
+    "rpc_up": {
+        "port": 8848,
+        "io_thread_num": "5",
+        "keep_alive": "30"
+    },
+    "rpc_down": [
+        {
+            "ip": "127.0.0.1",
+            "port": 8848
+        }
+    ],
     "ipc": {
         "ipc_client": {
-            "name": "ipc_pyMTApi",
+            "name": "ipc_client",
             "max_msg_num": 1000,
             "max_msg_size": 10240
         },

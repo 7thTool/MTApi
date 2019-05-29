@@ -170,39 +170,30 @@ public:
 		return services_[last_service_index++%services_.size()]->service();
 	}
 
-	void on_add_exchange(const std::vector<ExchangeInfoPtr> exchanges)
+	void on_exchange_update(IDataSet* exchange)
 	{
 		if(up_mode_ == UpDownMode::WORK_MODE_IPC) {
-			ipc_server_->post_add_exchange(exchanges);
+			ipc_server_->post_exchange_update(exchange);
 		} else {
-			rpc_server_->post_add_exchange(exchanges);
+			rpc_server_->post_exchange_update(exchange);
 		}
 	}
 
-	void on_remove_exchange(const std::vector<ExchangeInfoPtr> exchanges)
+	void on_product_update(IDataSet* product)
 	{
 		if(up_mode_ == UpDownMode::WORK_MODE_IPC) {
-			ipc_server_->post_remove_exchange(exchanges);
+			ipc_server_->post_commodity_update(product);
 		} else {
-			rpc_server_->post_remove_exchange(exchanges);
+			rpc_server_->post_commodity_update(product);
 		}
 	}
 
-	void on_commodity_update(const CommodityInfoPtr& commodity)
+	void on_commodity_update(IDataSet* commodity)
 	{
 		if(up_mode_ == UpDownMode::WORK_MODE_IPC) {
 			ipc_server_->post_commodity_update(commodity);
 		} else {
 			rpc_server_->post_commodity_update(commodity);
-		}
-	}
-
-	void on_commodity_status(const CommodityInfoPtr& commodity)
-	{
-		if(up_mode_ == UpDownMode::WORK_MODE_IPC) {
-			ipc_server_->post_commodity_status(commodity);
-		} else {
-			rpc_server_->post_commodity_status(commodity);
 		}
 	}
 

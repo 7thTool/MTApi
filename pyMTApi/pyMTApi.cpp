@@ -51,7 +51,7 @@ void pyMTApi::default_Stop()
     MTApi::Stop();
 }
 
-void pyMTApi::on_exchange_update(IDataSet* dataset, UpdateFlag flag)
+void pyMTApi::on_exchange_update(IDataSet* dataset)
 {
     PyLock lock;
     try
@@ -64,7 +64,7 @@ void pyMTApi::on_exchange_update(IDataSet* dataset, UpdateFlag flag)
     }
 }
 
-void pyMTApi::on_product_update(IDataSet* dataset, UpdateFlag flag)
+void pyMTApi::on_product_update(IDataSet* dataset)
 {
     PyLock lock;
     try
@@ -77,7 +77,7 @@ void pyMTApi::on_product_update(IDataSet* dataset, UpdateFlag flag)
     }
 }
 
-void pyMTApi::on_commodity_update(IDataSet* dataset, UpdateFlag flag)
+void pyMTApi::on_commodity_update(IDataSet* dataset)
 {
     PyLock lock;
     try

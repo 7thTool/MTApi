@@ -68,7 +68,7 @@ void CTDApi::AddUser(char* xml, int xmlflag)
 {
 	std::shared_ptr<boost::property_tree::ptree> params = std::make_shared<boost::property_tree::ptree>();
 	XUtil::cfg_from_xml(xml, xmlflag, *params);
-    theMTApi.on_request("user_login", params);
+    //theMTApi.request("user_login", params);
 	service().post(boost::bind(&CMTApi::on_add_user, &theMTApi, params));
 	//theMTApi.on_add_user(params);
 }
@@ -77,15 +77,16 @@ void CTDApi::RemoveUser(char* xml, int xmlflag)
 {
 	std::shared_ptr<boost::property_tree::ptree> params = std::make_shared<boost::property_tree::ptree>();
 	XUtil::cfg_from_xml(xml, xmlflag, *params);
-    theMTApi.on_request("user_logout", params);
+    //theMTApi.request("user_logout", params);
 	service().post(boost::bind(&CMTApi::on_remove_user, &theMTApi, params));
 	//theMTApi.on_remove_user(params);
 }
 
 void CTDApi::Request(char* xml, int xmlflag)
 {
-    std::shared_ptr<boost::property_tree::ptree> params = std::make_shared<boost::property_tree::ptree>();
-	XUtil::cfg_from_xml(xml, xmlflag, *params);
+	theMTApi.td_request(xml, xmlflag);
+    //std::shared_ptr<boost::property_tree::ptree> params = std::make_shared<boost::property_tree::ptree>();
+	//XUtil::cfg_from_xml(xml, xmlflag, *params);
 	//service().post(boost::bind(&CMTApi::on_request, &theMTApi, params));
 }
 

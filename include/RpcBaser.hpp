@@ -24,40 +24,6 @@ class RpcBaser
     	
 	}
 
-	const char *name()
-	{
-		return "RpcBaser";
-	}
-
-	bool start(char* xml, int xmlflag = 0)
-	{
-        // bool expected = true;
-        // if (!stop_flag_.compare_exchange_strong(expected, false))
-        // {
-        //     return true;
-        // }
-
-        boost::property_tree::ptree& cfg = theApp.cfg();
-		
-    	const size_t io_thread_num = cfg.get<size_t>("rpc.io_thread_num", 1);
-		NetBase::start(io_thread_num);
-        return true;
-	}
-
-	void stop()
-	{
-        // bool expected = false;
-        // if (!stop_flag_.compare_exchange_strong(expected, true))
-        // {
-        //     return;
-        // }
-
-		NetBase::stop();
-		//Base::term();
-	}
-
-    inline bool is_run() { return !stop_flag_; }
-
 public:
 	inline void on_recv(size_t peer, const std::string& msg)
 	{

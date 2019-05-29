@@ -9,10 +9,10 @@ namespace MTP {
 class IMDSpi
 {
 public:
-    //virtual void on_state_update(IDataSet* dataset, UpdateFlag flag) { }
-	virtual void on_exchange_update(IDataSet* dataset, UpdateFlag flag) { }
-	virtual void on_product_update(IDataSet* dataset, UpdateFlag flag) { }
-    virtual void on_commodity_update(IDataSet* dataset, UpdateFlag flag) { }
+    //virtual void on_state_update(IDataSet* dataset) { }
+	virtual void on_exchange_update(IDataSet* dataset) { }
+	virtual void on_product_update(IDataSet* dataset) { }
+    virtual void on_commodity_update(IDataSet* dataset) { }
 };
 
 /**

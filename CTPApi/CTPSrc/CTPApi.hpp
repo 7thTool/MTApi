@@ -11,14 +11,16 @@
 namespace MTP {
 
 class CTPApi
-	: public XUtil::XServer<CTPApi>
+	: public XUtil::XApp
     , public IMDApi
     , public ITDApi
 {
-	typedef XUtil::XServer<CTPApi> Base;
+	typedef XUtil::XApp Base;
 	typedef CTPMarket<CTPApi> MDSrcHandler;
 	typedef CTPTrade<CTPApi> TDSrcHandler;
   private:
+	IMDSpi* md_spi_ = nullptr;
+	ITDSpi* td_spi_ = nullptr;
 	CTPUserLoginInfo logininfo_;
 	std::shared_ptr<MDSrcHandler> md_src_handler_;
 	std::map<std::string,std::shared_ptr<TDSrcHandler>> td_src_handlers_;
@@ -36,11 +38,11 @@ class CTPApi
 		return "CTPApi";
 	}
 
-	void init(int argc, char *argv[])
+	void start(char* xml, int xmlflag = 0)
 	{
 		status_ = Status::INIT;
 
-		Base::init(argc, argv);
+		Base::init(xml,xmlflag);
 
 		boost::property_tree::ptree& cfg = theApp.cfg();
 	
@@ -56,28 +58,12 @@ class CTPApi
 		// }
 
 		md_src_handler_ = std::make_shared<MDSrcHandler>(this);
-		auto opt_md_src_handler = cfg.get_child_optional(MD_SRC_HANDLER_NAME);
-		if(opt_md_src_handler) {
-			boost::property_tree::ptree& cfg_md_src_handler = opt_md_src_handler.get();
-			auto opt_data = cfg_md_src_handler.get_child_optional("data");
-			if(opt_data) {
-				boost::property_tree::ptree& cfg_data = opt_data.get();
-				md_src_handler_->start((char*)&cfg_data, XUtil::XML_FLAG_PTREE);
-			}
-		} else {
-			ASSERT(0);
-		}
+		md_src_handler_->start((char*)&cfg, XUtil::XML_FLAG_PTREE);
 
-        XUtil::XController::instance().SetHandler("CTPApi", this);
+        XUtil::XController::instance().SetHandler("md_CTPApi", dynamic_cast<IMDApi*>(this));
+		XUtil::XController::instance().SetHandler("td_CTPApi", dynamic_cast<ITDApi*>(this));
 
 		status_ = Status::RUN;
-	}
-
-	void term()
-	{
-        XUtil::XController::instance().SetHandler("CTPApi", nullptr);
-		//IMDSet::Instance().term(); 由外部释放
-		Base::term();
 	}
 
 	inline bool is_run() { return status_ == Status::RUN; }
@@ -86,7 +72,8 @@ class CTPApi
 	{
 		status_ = Status::STOP;
 
-		Base::stop();
+        XUtil::XController::instance().SetHandler("md_CTPApi", nullptr);
+		XUtil::XController::instance().SetHandler("td_CTPApi", nullptr);
 
 		for (auto it : td_src_handlers_)
 		{
@@ -104,13 +91,16 @@ class CTPApi
 		md_src_handler_.reset();
 
 		services_.clear();
+		
+		//IMDSet::Instance().term(); 由外部释放
+		Base::term();
 	}
 
     //IMDApi
-    virtual void RegisterSpi(IMDSpi* pSpi) {}
+    virtual void RegisterSpi(IMDSpi* pSpi) { md_spi_ = pSpi; }
 
     //ITDApi
-    virtual void RegisterSpi(ITDSpi* pSpi) {}
+    virtual void RegisterSpi(ITDSpi* pSpi) { td_spi_ = pSpi; }
 
     virtual void AddUser(char* xml, int xmlflag = 0) {}
     virtual void RemoveUser(char* xml, int xmlflag = 0) {}
@@ -118,30 +108,24 @@ class CTPApi
 
 public:
 	//基础接口
-	inline boost::asio::io_service& service() { return Base::service(); }
 	inline boost::asio::io_service& select_service() {
 		static size_t last_service_index = 0;
 		return services_[last_service_index++%services_.size()]->service();
 	}
 
-	void on_add_exchange(const std::vector<ExchangeInfoPtr> exchanges)
+	void on_exchange_update(IDataSet* exchange)
 	{
-		
+		md_spi_->on_exchange_update(exchange);
 	}
 
-	void on_remove_exchange(const std::vector<ExchangeInfoPtr> exchanges)
+	void on_product_update(IDataSet* product)
 	{
-		
+		md_spi_->on_product_update(product);
 	}
 
-	void on_commodity_update(const CommodityInfoPtr& commodity)
+	void on_commodity_update(IDataSet* commodity)
 	{
-		
-	}
-
-	void on_commodity_status(const CommodityInfoPtr& commodity)
-	{
-		
+		md_spi_->on_commodity_update(commodity);
 	}
 
 	inline void on_request (size_t peer, const std::string& method, const std::shared_ptr<boost::property_tree::ptree>& params, size_t id)

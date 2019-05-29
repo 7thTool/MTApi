@@ -101,7 +101,7 @@ public:
         return MakeBufferSetPtr(name, input, calcdata, flag);
     }
 
-	virtual void on_exchange_update(IDataSet* dataset, UpdateFlag flag) 
+	virtual void on_exchange_update(IDataSet* dataset) 
     { 
         // DataSetConv conv;
         // std::cout << conv.to_json(dataset) << std::endl;
@@ -114,7 +114,7 @@ public:
         // }
     }
 
-	virtual void on_product_update(IDataSet* dataset, UpdateFlag flag) 
+	virtual void on_product_update(IDataSet* dataset) 
     { 
         // std::vector<IProductSetPtr> product_ptrs = Ref_All_Product();
         // for (auto& product_ptr : product_ptrs)
@@ -122,7 +122,7 @@ public:
         // }
     }
 
-    virtual void on_commodity_update(IDataSet* dataset, UpdateFlag flag) 
+    virtual void on_commodity_update(IDataSet* dataset) 
     {
         // DataSetConv conv;
         // std::cout << conv.to_json(dataset) << std::endl;
