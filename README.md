@@ -31,7 +31,7 @@ MTApi是一套支持Python/C/C++/http/websocket的行情、交易、指标、策
 
     * 数字货币、现货、期货、期权、永续合约
     
-4. 原生实现策略指标，使用C/C++在收到行情数据时，通过使用增量计算技术，基本上实现零消耗的情况下，讲行情和指标数据传给策略应用，从而实现极低延迟和极高效率的量化策略交易，完虐市场上所有量化策略平台
+4. 原生实现策略指标，使用C/C++在收到行情数据时，通过使用增量计算技术，基本上实现零消耗的情况下，将行情和指标数据传给策略应用，从而实现极低延迟和极高效率的量化策略交易，完虐市场上所有量化策略平台
 
 5. 全自动开盘、运行策略、收盘，并自动落地历史数据
 
@@ -47,10 +47,6 @@ MTApi是一套支持Python/C/C++/http/websocket的行情、交易、指标、策
 
 8. 简洁易用的事件驱动策略开发框架，方便策略开发。
 
-9. [社区论坛](http://www.mtapi.com)和[知乎专栏](http://zhuanlan.zhihu.com/mtapi)，内容包括mtapi项目的开发教程和Python/C/C++在量化交易领域的应用研究等内容。
-
-10. 官方交流群262656087（QQ），入群费将捐赠给mtapi社区基金。
-
 ## 环境准备
 
 * 支持的系统版本：Windows 7以上/Windows Server 2008以上/Ubuntu 18.04 LTS
@@ -58,7 +54,7 @@ MTApi是一套支持Python/C/C++/http/websocket的行情、交易、指标、策
 
 ## 安装步骤
 
-直接clone：git clone 
+直接clone：git clone https://github.com/7thTool/MTApi.git
 
 **Windows**
 
