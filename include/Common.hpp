@@ -325,7 +325,7 @@ inline bool MergePeriod(period_t dst, period_t src)
 		return BasePeriod;
 	}
 
-	inline size_t CalcSecondData(tagCalcParam* pParam, KDATA *pOutData, size_t nOutDataCount, KDATA *pSourceData, size_t nSourceCount)
+	inline size_t CalcSecondData(const tagCalcParam* pParam, KDATA *pOutData, size_t nOutDataCount, KDATA *pSourceData, size_t nSourceCount)
 	{
 		if (pParam == NULL || pOutData == NULL || pSourceData == NULL) {
 			return 0;
@@ -393,7 +393,7 @@ inline bool MergePeriod(period_t dst, period_t src)
 		return Result;
 	}
 
-	inline size_t CalcMinuteData(tagCalcParam* pParam, KDATA *pOutData, size_t OutDataCount, KDATA *pSourceData, size_t nSourceCount)
+	inline size_t CalcMinuteData(const tagCalcParam* pParam, KDATA *pOutData, size_t OutDataCount, KDATA *pSourceData, size_t nSourceCount)
 	{
 		if (pParam == NULL || pOutData == NULL || pSourceData == NULL) {
 			return 0;

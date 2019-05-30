@@ -1008,14 +1008,17 @@ namespace MTP {
 	    PERIODTYPE period_;
 	    DWTYPE dwtype_;
 	    tagCalcParam param_;
+        //std::vector<TICK> ticks_;
         std::vector<KDATA> kdatas_;
-        bool update_flag_ = false; //是否发生变化
+        bool update_flag_ = true; //是否发生变化
     public:
         MDCalcDataSetWrapper(TCommodityPtr commodity, PERIODTYPE period, DWTYPE dwtype):Base(commodity),period_(period),dwtype_(dwtype)
         {
             param_.Period = period;
             param_.PeriodEx = 0;
             param_.BasePeriod = CalcBasePeriod(period, 0, &param_.Multiple);
+            //ticks_.reserve(commodity_->GetMaxTimePoint(CYC_5SEC));
+            kdatas_.reserve(commodity_->GetMaxTimePoint(period_));
         }
 
         const char* Exchange() const { return commodity_->Exchange; }
@@ -1156,52 +1159,33 @@ namespace MTP {
                     switch (period_)
                     {
                     case CYC_TICK:
-                        return commodity_->ticks_.size();
-                        break;
-                    case CYC_5SEC:
-                        return commodity_->rt_kdatas_[period_].size();
-                        break;
-                    case CYC_ANYSEC:
                         {
-                            size_t old_size = kdatas_.size();
-                            size_t new_size = commodity_->rt_kdatas_[period_].size();
-                            if(!update_flag_ && old_size == new_size) {
-                                return kdatas_.size();
-                            }
-                            kdatas_.resize(commodity_->rt_kdatas_[period_].size());
-                            kdatas_.resize(CalcSecondData(&param_, &kdatas_[0], kdatas_.size()
-                            , &commodity_->rt_kdatas_[period_][0], commodity_->rt_kdatas_[period_].size()));
-                            update_flag_ = false;
+                            return commodity_->ticks_.size();
                         }
                         break;
+                    case CYC_5SEC:
+                    case CYC_ANYSEC:
                     case CYC_1MIN:
-                        return commodity_->rt_kdatas_[period_].size();
-                        break;
                     case CYC_5MIN:
                     case CYC_15MIN:
                     case CYC_30MIN:
                     case CYC_60MIN:
                     case CYC_ANYMIN:
                         {
-                            size_t old_size = kdatas_.size();
-                            size_t new_size = commodity_->rt_kdatas_[period_].size();
-                            if(!update_flag_ && old_size == new_size) {
-                                return kdatas_.size();
+                            if(update_flag_) {
+                                update_flag_ = false;
+                                commodity_->CopyData(kdatas_, param_);
                             }
-                            kdatas_.resize(commodity_->rt_kdatas_[period_].size());
-                            kdatas_.resize(CalcMinuteData(&param_, &kdatas_[0], kdatas_.size()
-                            , &commodity_->rt_kdatas_[period_][0], commodity_->rt_kdatas_[period_].size()));
-                            update_flag_ = false;
+                            return kdatas_.size();
                         }
                         break;
                     case CYC_DAY:
-                        return 1;
-                        break;
                     case CYC_WEEK:
                     case CYC_MONTH:
                     case CYC_SEASON:
                     case CYC_YEAR:
                     case CYC_ANYDAY:
+                        return 1;
                         break;
                     default:
                         break;
@@ -1310,16 +1294,8 @@ namespace MTP {
                         }
                         break;
                     case CYC_5SEC:
-                        pdata = &commodity_->rt_kdatas_[period_][0];
-                        break;
                     case CYC_ANYSEC:
-                        {
-                            pdata = &kdatas_[0];
-                        }
-                        break;
                     case CYC_1MIN:
-                        pdata = &commodity_->rt_kdatas_[period_][0];
-                        break;
                     case CYC_5MIN:
                     case CYC_15MIN:
                     case CYC_30MIN:
@@ -1330,6 +1306,11 @@ namespace MTP {
                         }
                         break;
                     case CYC_DAY:
+                    case CYC_WEEK:
+                    case CYC_MONTH:
+                    case CYC_SEASON:
+                    case CYC_YEAR:
+                    case CYC_ANYDAY:
                         {
                             switch(id)
                             {
@@ -1390,12 +1371,6 @@ namespace MTP {
                                 break;
                             }
                         }
-                        break;
-                    case CYC_WEEK:
-                    case CYC_MONTH:
-                    case CYC_SEASON:
-                    case CYC_YEAR:
-                    case CYC_ANYDAY:
                         break;
                     default:
                         break;
@@ -1466,49 +1441,6 @@ namespace MTP {
             }
             return Base::GetFieldValue(id, offset);
         }
-        // bool GetFieldValueAs(size_t type, void* value, size_t id, size_t offset = 0) 
-        // { 
-        //     if(Base::GetFieldValueAs(type, value, id, offset)) {
-        //         return true;
-        //     }
-        //     switch(id)
-        //     {
-        //         case IDF_AMOUNT:
-        //         case IDF_BARGAIN:
-        //         {
-        //             switch (period_)
-        //             {
-        //             case CYC_TICK:
-        //                 {
-        //                     switch(id)
-        //                     {
-        //                         case IDF_AMOUNT:
-        //                         {
-        //                             double raw_value = commodity_->ticks_[offset].Price*commodity_->ticks_[offset].Volume;
-        //                             Convert(FIELD_TYPE_DOUBLE, &raw_value, type, value);
-        //                             return true;
-        //                         }
-        //                         break;
-        //                         case IDF_BARGAIN:
-        //                         {
-        //                             uint32_t raw_value = 1;
-        //                             Convert(FIELD_TYPE_INT32, &raw_value, type, value);
-        //                             return true;
-        //                         }
-        //                         break;
-        //                         default:
-        //                         break;
-        //                     }
-        //                 }
-        //                 break;
-        //             default:
-        //                 break;
-        //             }
-        //         }
-        //         break;
-        //     }
-        //     return false; 
-        // }
 
         //更新计算数据
         void Update()

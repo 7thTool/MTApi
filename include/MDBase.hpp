@@ -154,7 +154,7 @@ namespace MTP {
 			uint8_t	PeriodsCount = 4; // 交易时段数量
 			uint16_t Periods[4][2] = { 0 }; // 交易时段描述[最多只是4个交易时段，每个时段包括开始、结束时间，精确到分，HH * 60 + MM格式]
 			uint16_t MaxTimePoint = GetMaxTimePoint(Periods, &PeriodsCount);
-			return GetHHMMSSByTimePoint(TimePoint, MaxTimePoint, Periods, PeriodsCount);
+			return MTP::GetHHMMSSByTimePoint(TimePoint, MaxTimePoint, Periods, PeriodsCount);
 		}
 
 		uint16_t GetMaxTimePoint(PERIODTYPE Period)
@@ -240,7 +240,6 @@ namespace MTP {
 			}
 			return HHMMSS;
 		}
-
 		
 		void AddTickData()
 		{
@@ -251,8 +250,18 @@ namespace MTP {
 			tick.Price = this->Price;
 			tick.Volume = this->LastVolume;
 			tick.OpenInterest = this->OpenInterest;
-			pT->ticks_.emplace_back(tick);
+			
+			if(pT->ticks_.size()>=pT->ticks_.capacity()) {
+				//std::copy(pT->ticks_.begin()+1,pT->ticks_.end(),pT->ticks_.begin());
+				memmove(&pT->ticks_[0], &pT->ticks_[1], sizeof(Tick)*(pT->ticks_.size()-1));
+				pT->ticks_.back() = tick;
+			} else {
+				pT->ticks_.emplace_back(tick);
+			}
 		}
+
+		//是否生成MaxTimePoint数据
+		//inline bool IsMaxTimePointData() { return true; }
 
 		void AddRealData()
 		{
@@ -272,15 +281,61 @@ namespace MTP {
 
 				int OldTimePoint = datas->empty() ? -1 :
 					GetTimePointByHHMMSS(datas->back().Time, (PERIODTYPE)i);
-
-				int AddCount = TimePoint - OldTimePoint;//AddCount == 0 时更新当前时间点数据，AddCount > 0 跟新新数据
-				if (AddCount >= 0) {
-					if (AddCount > 0) {
-						datas->resize(datas->size() + 1); //扩展到最新Time大小
+				//if(!pT->IsMaxTimePointData()) {
+					int AddCount = TimePoint - OldTimePoint;//AddCount == 0 时更新当前时间点数据，AddCount > 0 跟新新数据
+					if (AddCount >= 0) {
+						if (AddCount > 0) {
+							datas->resize(datas->size() + 1); //扩展到最新Time大小
+						}
+						KData& data = datas->back();
+						UpdateKData(data, (PERIODTYPE)i);
 					}
-					KData& data = datas->back();
-					UpdateKData(data, (PERIODTYPE)i);
-				}	
+				//} else {
+				//	datas->resize(TimePoint + 1); //扩展到最新Time大小
+				//	int AddCount = TimePoint - OldTimePoint;//AddCount == 0 时更新当前时间点数据，AddCount > 0 跟新新数据
+				//	if (AddCount >= 0) {
+				//		CheckKData((PERIODTYPE)i, &(*datas)[0], OldTimePoint + 1, AddCount);
+				//		KData& data = datas->back();
+				//		UpdateKData(data, (PERIODTYPE)i);
+				//	}
+				//}
+			}
+		}
+
+		inline void CheckKData(PERIODTYPE Period, KData *pData, int Start, int Count)
+		{
+			T* pT = static_cast<T*>(this);
+			for (int i = Start; i < Start + Count; i++)
+			{
+				if (pData[i].Date == 0) {
+					if (i == 0) {
+						pData[i].Date = pT->Date;
+					}
+					else {
+						pData[i].Date = pData[i - 1].Date;
+					}
+				}
+				if (pData[i].Time == 0) {
+					pData[i].Time = GetHHMMSSByTimePoint(i, Period);
+				}
+
+				// 校验价格
+				if (IsZeroFloat(pData[i].Close) || IsZeroFloat(pData[i].High) || IsZeroFloat(pData[i].Low) || IsZeroFloat(pData[i].Open)
+					|| IsOverFloat(pData[i].Close) || IsOverFloat(pData[i].High) || IsOverFloat(pData[i].Low) || IsOverFloat(pData[i].Open)) {
+					if (i == 0) {
+						pData[i].Open = pT->PreClosePrice;
+						pData[i].High = pData[i].Open;
+						pData[i].Low = pData[i].Open;
+						pData[i].Close = pData[i].Open;
+					}
+					else {
+						pData[i].Open = pData[i - 1].Close;
+						pData[i].High = pData[i].Open;
+						pData[i].Low = pData[i].Open;
+						pData[i].Close = pData[i].Open;
+					}
+				}
+				ASSERT(!IsZeroFloat(pData[i].Open) && !IsZeroFloat(pData[i].High) && !IsZeroFloat(pData[i].Low) && !IsZeroFloat(pData[i].Close));
 			}
 		}
 

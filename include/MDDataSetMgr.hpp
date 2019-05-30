@@ -107,9 +107,24 @@ public:
         std::unique_lock<std::shared_mutex> w_lock(product_mutex_);
         if(exchange && exchange[0])
         {
-            ProductSetInfo datasetinfo(exchange, product);
-            auto pr = productsets_.equal_range(&datasetinfo);
-            productsets_.erase(pr.first, pr.second);
+            // ProductSetInfo datasetinfo(exchange, product);
+            // auto pr = productsets_.equal_range(&datasetinfo);
+            // productsets_.erase(pr.first, pr.second);
+            for(auto it = productsets_.begin(); it != productsets_.end(); )
+            {
+                if(strcmp(it->second->Exchange(),exchange) == 0) {
+                    if(product && product[0]) {
+                        if(strcmp(it->second->Product(),product) == 0) {
+                            it = productsets_.erase(it);
+                            break;
+                        }
+                    } else {
+                        it = productsets_.erase(it);
+                        continue;
+                    }
+                } 
+                ++it;
+            }
         }
         else
         {
@@ -122,9 +137,31 @@ public:
         std::unique_lock<std::shared_mutex> w_lock(commodity_mutex_);
         if(exchange && exchange[0])
         {
-            CommoditySetInfo datasetinfo(exchange, product, code);
-            auto pr = commoditysets_.equal_range(&datasetinfo);
-            commoditysets_.erase(pr.first, pr.second);
+            // CommoditySetInfo datasetinfo(exchange, product, code);
+            // auto pr = commoditysets_.equal_range(&datasetinfo);
+            // commoditysets_.erase(pr.first, pr.second);
+            for(auto it = commoditysets_.begin(); it != commoditysets_.end(); )
+            {
+                if(strcmp(it->second->Exchange(),exchange) == 0) {
+                    if(product && product[0]) {
+                        if(strcmp(it->second->Product(),product) == 0) {
+                            if(code && code[0]) {
+                                if(strcmp(it->second->Code(),code) == 0) {
+                                    it = commoditysets_.erase(it);
+                                    break;
+                                } 
+                            } else {
+                                it = commoditysets_.erase(it);
+                                continue;
+                            }
+                        }
+                    } else {
+                        it = commoditysets_.erase(it);
+                        continue;
+                    }
+                } 
+                ++it;
+            }
         }
         else
         {
@@ -136,10 +173,10 @@ public:
     {
         std::unique_lock<std::shared_mutex> w_lock(calcdata_mutex_);
         if(exchange && exchange[0]) {
-            CalcDataSetInfo datasetinfo(exchange, product, code, (PERIODTYPE)0, (DWTYPE)0);
-            auto pr = calcdatasets_.equal_range(&datasetinfo);
-            calcdatasets_.erase(pr.first, pr.second);
-            /*for(auto it = calcdatasets_.begin(); it != calcdatasets_.end(); )
+            // CalcDataSetInfo datasetinfo(exchange, product, code, (PERIODTYPE)0, (DWTYPE)0);
+            // auto pr = calcdatasets_.equal_range(&datasetinfo);
+            // calcdatasets_.erase(pr.first, pr.second);
+            for(auto it = calcdatasets_.begin(); it != calcdatasets_.end(); )
             {
                 if(strcmp(it->second->Exchange(),exchange) == 0) {
                     if(product && product[0]) {
@@ -160,7 +197,7 @@ public:
                     }
                 } 
                 ++it;
-            }*/
+            }
         }
         else
         {

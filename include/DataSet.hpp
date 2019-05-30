@@ -136,7 +136,7 @@ struct FieldValueWrapper : public FieldInfo
 		return nullptr;
 	}
 
-	void * SetMaxSize(size_t size) {
+	void SetMaxSize(size_t size) {
 		auto &field_value = *this;
 		field_value.max_size = size;
 	}
@@ -579,13 +579,12 @@ class CDataSetWrapper : public BaseSet
 		return nullptr; 
 	}
 
-	void * SetFieldMaxSize(size_t id, void* value, size_t size) { 
+	void SetFieldMaxSize(size_t id, void* value, size_t size) { 
 		auto it = field_values_.find(id);
 		if(it != field_values_.end()) {
 			auto& field_value = it->second;
-			return field_value.SetMaxSize(size);
+			field_value.SetMaxSize(size);
 		}
-		return nullptr;
 	}
 	void * SetFieldSize(size_t id, size_t size) { 
 		auto it = field_values_.find(id);
@@ -724,13 +723,12 @@ class CStrDataSetWrapper : public BaseSet
 		return GetFieldValue((size_t)id, offset); 
 	}
 
-	void * SetFieldMaxSize(size_t id, size_t size) { 
+	void SetFieldMaxSize(size_t id, size_t size) { 
 		auto it = field_values_.find((const char*)id);
 		if(it != field_values_.end()) {
 			auto& field_value = it->second;
-			return field_value.SetMaxSize(size);
+			field_value.SetMaxSize(size);
 		}
-		return nullptr;
 	}
 	void * SetFieldSize(size_t id, size_t size) { 
 		auto it = field_values_.find((const char*)id);

@@ -115,17 +115,20 @@ public:
 
 	void on_exchange_update(IDataSet* exchange)
 	{
-		md_spi_->on_exchange_update(exchange);
+		if(md_spi_)
+			md_spi_->on_exchange_update(exchange);
 	}
 
 	void on_product_update(IDataSet* product)
 	{
-		md_spi_->on_product_update(product);
+		if(md_spi_)
+			md_spi_->on_product_update(product);
 	}
 
 	void on_commodity_update(IDataSet* commodity)
 	{
-		md_spi_->on_commodity_update(commodity);
+		if(md_spi_)
+			md_spi_->on_commodity_update(commodity);
 	}
 
 	inline void on_request (size_t peer, const std::string& method, const std::shared_ptr<boost::property_tree::ptree>& params, size_t id)
