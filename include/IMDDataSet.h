@@ -196,13 +196,13 @@ public:
 			} else if(cmp > 0) {
 				return false;
 			}
-			const char *product = Product(), *r_product = rc->Product();
-			cmp = strcmp(product, r_product);
-			if(cmp < 0) {
-				return true;
-			} else if(cmp > 0) {
-				return false;
-			}
+			// const char *product = Product(), *r_product = rc->Product();
+			// cmp = strcmp(product, r_product);
+			// if(cmp < 0) {
+			// 	return true;
+			// } else if(cmp > 0) {
+			// 	return false;
+			// }
 			const char *code = Code(), *r_code = rc->Code();
 			cmp = strcmp(code, r_code);
 			if(cmp < 0) {

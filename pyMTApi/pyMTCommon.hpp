@@ -5,6 +5,8 @@
 #include <boost/python/pure_virtual.hpp>
 #include <boost/python/list.hpp>
 #include <boost/python/numpy.hpp>
+#include <boost/python/suite/indexing/vector_indexing_suite.hpp>
+#include <boost/python/suite/indexing/map_indexing_suite.hpp>
 namespace python = boost::python;
 namespace numpy = boost::python::numpy;
 #include <XUtil/XUtil.hpp>

@@ -48,6 +48,7 @@ void pyMTApi::default_Stop()
 {
     std::cout << "pyMTApi::default_Stop()" << std::endl;
     map_calculators_.clear();
+    map_subscribes_.clear();
     MTApi::Stop();
 }
 
@@ -56,7 +57,8 @@ void pyMTApi::on_exchange_update(IDataSet* dataset)
     PyLock lock;
     try
     {
-        //get_override("on_exchange_update")(ptr(&DepthMarketData));
+        const char* exchange = (const char*)dataset->GetFieldValue(IDF_Exchange);
+        get_override("on_exchange_update")(exchange);
     }
     catch (python::error_already_set const &)
     {
@@ -69,7 +71,9 @@ void pyMTApi::on_product_update(IDataSet* dataset)
     PyLock lock;
     try
     {
-        //get_override("on_product_update")(ptr(&DepthMarketData));
+        const char* exchange = (const char*)dataset->GetFieldValue(IDF_Exchange);
+        const char* product = (const char*)dataset->GetFieldValue(IDF_Product);
+        get_override("on_product_update")(exchange, product);
     }
     catch (python::error_already_set const &)
     {
@@ -82,6 +86,10 @@ void pyMTApi::on_commodity_update(IDataSet* dataset)
     PyLock lock;
     try
     {
+        const char* exchange = (const char*)dataset->GetFieldValue(IDF_Exchange);
+        const char* product = (const char*)dataset->GetFieldValue(IDF_Product);
+        const char* code = (const char*)dataset->GetFieldValue(IDF_Code);
+        get_override("on_commodity_update")(exchange, product, code);
         //get_override("on_commodity_update")(ptr(&DepthMarketData));
     }
     catch (python::error_already_set const &)

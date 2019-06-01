@@ -385,6 +385,7 @@ struct pyMTApi
     typedef CMTApiMgr<pyMTApi> MTApi;
     typedef python::wrapper<pyMTApi> pyWrapper;
 protected:
+    std::map<const ICommoditySet *, ICommoditySetPtr> map_subscribes_;
     typedef std::map<const char *, ICalculatorSetPtr, XUtil::strless> Calculators;
     Calculators map_calculators_;
 public:
@@ -411,20 +412,18 @@ public:
     //     return MakeAllProductSetPtr(exchange_ptr);
     // }
 
-    // inline std::vector<ICommoditySetPtr> Ref_All_Commodity()
-    // {
-    //     return MakeAllCommoditySetPtr();
-    // }
-
     // inline std::vector<ICommoditySetPtr> Ref_All_Commodity(IProductSetPtr product_ptr)
     // {
     //     return MakeAllCommoditySetPtr(product_ptr);
     // }
 
-    // inline std::vector<ICommoditySetPtr> Ref_All_Commodity(IExchangeSetPtr exchange_ptr)
-    // {
-    //     return MakeAllCommoditySetPtr(exchange_ptr);
-    // }
+    inline std::vector<ICommoditySetPtr> Ref_All_Commodity(IExchangeSetPtr exchange_ptr = nullptr)
+    {
+		if (exchange_ptr) {
+			return MakeAllCommoditySetPtr(exchange_ptr);
+		}
+		return MakeAllCommoditySetPtr();
+    }
 
     // inline std::vector<ICalculatorSetPtr> Ref_All_Calculator()
     // {
@@ -548,6 +547,19 @@ public:
         return pyDataSet(MakeBufferSetPtr(name, nullptr, calcdata.get(), flag));
     }
 
+    inline void Subscribe(const python::object & req)
+    {
+        python::dict dict_req = python::extract<python::dict>(req.attr("__dict__"));
+        if(dict_req) {
+			const char* exchange = python::extract<const char*>(dict_req["exchange"]);
+			const char* code = python::extract<const char*>(dict_req["symbol"]);
+            ICommoditySetPtr commodity_ptr = MakeCommoditySetPtr(exchange, "", code);
+            if(commodity_ptr) {
+                map_subscribes_[commodity_ptr.get()] = commodity_ptr;
+            }
+        }
+    }
+
 	virtual void on_exchange_update(IDataSet* dataset);
 	virtual void on_product_update(IDataSet* dataset);
     virtual void on_commodity_update(IDataSet* dataset);
@@ -561,6 +573,27 @@ public:
             py_all_user.push_back(pyStrDataSet(user));
         }
         return py_all_user;
+    }
+
+    
+    inline void SendOrder(const python::object & req)
+    {
+
+    }
+
+    inline void CancelOrder(const python::object & req)
+    {
+
+    }
+
+    inline void QueryAccount()
+    {
+
+    }
+
+    inline void QueryPosition()
+    {
+
     }
 
 	virtual void on_user_update(IDataSet* dataset, UpdateFlag flag);
@@ -631,6 +664,7 @@ void pyIndexError() { PyErr_SetString(PyExc_IndexError, "Index out of range"); }
 //https://www.boost.org/doc/libs/1_70_0/libs/python/doc/html/reference/index.html
 
 //BOOST_PYTHON_FUNCTION_OVERLOADS(f_overloads, f, 1, 4); // 参数个数的最小为1，最大为4
+BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(MTApi_Ref_All_Commodity_overloads, Ref_All_Commodity, 0, 1); // 默认参数个数的最小为0，最大为1
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(MTApi_Ref_Exchange_overloads, Ref_Exchange, 1, 2); // 默认参数个数的最小为1，最大为2
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(MTApi_Ref_Product_overloads, Ref_Product, 2, 3); // 默认参数个数的最小为1，最大为2
 BOOST_PYTHON_MEMBER_FUNCTION_OVERLOADS(MTApi_Ref_Commodity_overloads, Ref_Commodity, 3, 4); // 默认参数个数的最小为1，最大为2
@@ -776,23 +810,33 @@ BOOST_PYTHON_MODULE(pyMTApi)
         .def(self_ns::str(self_ns::self))  // __str__ for ostream
         ;
 
+    class_<std::vector<ICommoditySetPtr>>("CommoditySetVec")
+        .def(vector_indexing_suite<std::vector<ICommoditySetPtr>> ())
+        ;
+
     class_<pyMTApi, boost::noncopyable>("MTApi")
         .def("Start", &pyMTApi::Start, &pyMTApi::default_Start)
         .def("Stop", &pyMTApi::Stop, &pyMTApi::default_Stop)
+        .def("Ref_All_Commodity", &pyMTApi::Ref_All_Commodity, MTApi_Ref_All_Commodity_overloads())
         .def("Ref", &pyMTApi::Ref_Exchange, MTApi_Ref_Exchange_overloads())
         .def("Ref", &pyMTApi::Ref_Product, MTApi_Ref_Product_overloads())
         .def("Ref", &pyMTApi::Ref_Commodity, MTApi_Ref_Commodity_overloads())
         .def("Ref", &pyMTApi::Ref_CalcData, MTApi_Ref_CalcData_overloads())
         .def("Ref", &pyMTApi::Ref_Buffer, MTApi_Ref_Buffer_overloads())
+        .def("Subscribe", &pyMTApi::Subscribe)
         .def("on_exchange_update", &pyMTApi::on_exchange_update)
         .def("on_product_update", &pyMTApi::on_product_update)
         .def("on_commodity_update", &pyMTApi::on_commodity_update)
         .def("Ref_All_User", &pyMTApi::Ref_All_User)
+        .def("SendOrder", &pyMTApi::SendOrder)
+        .def("CancelOrder", &pyMTApi::CancelOrder)
+        .def("QueryAccount", &pyMTApi::QueryAccount)
+        .def("QueryPosition", &pyMTApi::QueryPosition)
         ;
 
     // register_ptr_to_python<IExchangeSetPtr>();
     // register_ptr_to_python<IProductSetPtr>();
-    // register_ptr_to_python<ICommoditySetPtr>();
+    register_ptr_to_python<ICommoditySetPtr>();
     // register_ptr_to_python<ICalcDataSetPtr>();
     // register_ptr_to_python<IBufferSetPtr>();
     // register_ptr_to_python<IBufferSetPtr>();

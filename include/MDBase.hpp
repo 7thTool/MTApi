@@ -56,33 +56,33 @@ namespace MTP {
 				return true;
 			}
 			else if (cmp == 0) {
-				cmp = std::strcmp(x->Product, y->Product);
-				if (cmp < 0) {
-					return true;
-				} else if (cmp == 0) {
-					int cmp = std::strcmp(x->Code, y->Code);
+				// cmp = std::strcmp(x->Product, y->Product);
+				// if (cmp < 0) {
+				// 	return true;
+				// } else if (cmp == 0) {
+					cmp = std::strcmp(x->Code, y->Code);
 					if (cmp < 0) {
 						return true;
 					}
-				}
+				// }
 			}
 			return false;
 		}
 	};
 	typedef CommodityPtrLess<> CommodityInfoPtrLess;
 	template<class CommodityPtr = CommodityInfoPtr>
-	struct CommodityPtrCodeLess
-	{
-		bool operator()(const CommodityPtr& x, const CommodityPtr& y) const
-		{
-			int cmp = std::strcmp(x->Code, y->Code);
-			if (cmp < 0) {
-				return true;
-			}
-			return false;
-		}
-	};
-	typedef CommodityPtrCodeLess<> CommodityInfoPtrCodeLess;
+	 struct CommodityPtrCodeLess
+	 {
+	 	bool operator()(const CommodityPtr& x, const CommodityPtr& y) const
+	 	{
+	 		int cmp = std::strcmp(x->Code, y->Code);
+	 		if (cmp < 0) {
+	 			return true;
+	 		}
+	 		return false;
+	 	}
+	 };
+	 typedef CommodityPtrCodeLess<> CommodityInfoPtrCodeLess;
 
 	template<class T, class Commodity, class Tick, class Tick_vector, class KData, class KData_vector, class Weight, class Weight_vector>
 	class CommodityWrapper : public Commodity
@@ -838,16 +838,15 @@ namespace MTP {
 						return true;
 					}
 					else if (cmp == 0) {
-						cmp = std::strcmp(x->Product, product_);
-						if (cmp < 0) {
-							return true;
-						}
-						else if (cmp == 0) {
-							int cmp = std::strcmp(x->Code, code_);
+						// cmp = std::strcmp(x->Product, product_);
+						// if (cmp < 0) {
+						// 	return true;
+						// } else if (cmp == 0) {
+							cmp = std::strcmp(x->Code, code_);
 							if (cmp < 0) {
 								return true;
 							}
-						}
+						//}
 					}
 					return false;
 				}
@@ -857,7 +856,7 @@ namespace MTP {
 			auto it = std::lower_bound(pT->commoditys_.begin(), pT->commoditys_.end(), key, CommodityPtrPred(exchange, product, code));
 			if (it != pT->commoditys_.end()) {
 				auto x = *it;
-				if(std::strcmp(x->Exchange, exchange) == 0 && std::strcmp(x->Product, product) == 0 && std::strcmp(x->Code, code) == 0) {
+				if(std::strcmp(x->Exchange, exchange) == 0/* && std::strcmp(x->Product, product) == 0*/ && std::strcmp(x->Code, code) == 0) {
 					if (pCommodity) {
 						*pCommodity = *it;
 					}

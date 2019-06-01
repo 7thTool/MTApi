@@ -17,14 +17,17 @@ class CMTApi:
     def Stop(self):
         self.api.Stop()
 
-    def on_exchange_update(self, exchange):
-        print('on_exchange_update: ', exchange)
+    def on_exchange_update(self, dataset):
+        print('on_exchange_update: ', dataset)
+        self.dataset = dataset
 
-    def on_product_update(self, exchange, product):
-        print('on_product_update: ', exchange, product)
+    def on_product_update(self, dataset, flag):
+        print('OnFrontDisconnected: ', dataset)
+        self.dataset = dataset
 
-    def on_commodity_update(self, exchange, product, code):
-        print('on_commodity_update: ', exchange, product, code)
+    def on_commodity_update(self, dataset):
+        print('OnHeartBeatWarning: ', dataset)
+        self.dataset = dataset
 
 
 if __name__ == '__main__':
