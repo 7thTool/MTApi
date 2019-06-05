@@ -39,6 +39,34 @@ from vnpy.trader.event import (
 )
 from enum import Enum, unique
 
+EXCHANGE_MT2VT = {
+    "CFFEX": Exchange.CFFEX,
+    "SHFE": Exchange.SHFE,
+    "CZCE": Exchange.CZCE,
+    "DCE": Exchange.DCE,
+    "INE": Exchange.INE,
+    "SSE": Exchange.SSE,
+    "SZSE": Exchange.SZSE
+}
+
+PRODUCT_MT2VT = {
+    "S": Product.EQUITY,
+    "F": Product.FUTURES,
+    "O": Product.OPTION,
+    "I": Product.INDEX,
+    "X": Product.FOREX,
+    "P": Product.SPOT,
+    "E": Product.ETF,
+    "B": Product.BOND,
+    "W": Product.WARRANT,
+    "D": Product.SPREAD,
+    "U": Product.FUND
+}
+
+# OPTIONTYPE_MT2VT = {
+#     THOST_FTDC_CP_CallOptions: OptionType.CALL,
+#     THOST_FTDC_CP_PutOptions: OptionType.PUT
+# }
 
 @unique
 class PRICETYPE(Enum):
@@ -155,23 +183,23 @@ class CMTApi:
 
     def Subscribe(self, req: SubscribeRequest):
         """"""
-        pass
+        self.api.Subscribe(req)
 
     def SendOrder(self, req: OrderRequest):
         """"""
-        pass
+        self.api.SendOrder(req)
 
     def CancelOrder(self, req: CancelRequest):
         """"""
-        pass
+        self.api.CancelOrder(req)
 
     def QueryAccount(self):
         """"""
-        pass
+        self.api.QueryAccount()
 
     def QueryPosition(self):
         """"""
-        pass
+        self.api.QueryPosition()
 
     def on_event(self, type: str, data: Any = None):
         """
@@ -179,24 +207,43 @@ class CMTApi:
         """
         event = Event(type, data)
         self.event_engine.put(event)
-
-    def on_exchange_update(self, exchange):
-        print('python on_exchange_update: ', exchange)
-        # contract = ContractData(
-        #     symbol=symbol,
-        #     exchange=exchange,
-        #     name=name,
-        #     product=product,
-        #     size=size,
-        #     pricetick=pricetick)
-        # self.on_event(EVENT_CONTRACT, contract)
-
-    def on_product_update(self, exchange, product):
-        print('python on_product_update: ', exchange, product)
+    
+    def on_market_update(self, state, reason, error):
+        """
+        General event push.
+        """
         pass
 
-    def on_commodity_update(self, exchange, product, code):
-        print('python on_commodity_update: ', exchange, product, code)
+    def on_exchange_update(self, dataset):
+        exchange = dataset.Exchange()
+        status = dataset.GetFieldAsInt(103)
+        print('python on_exchange_update: ', exchange, status)
+        all_commoditys = self.api.Ref_All_Commodity()
+        print('python all_commoditys: ', all_commoditys)
+        for comodity in all_commoditys:
+            print('python commodity: ', comodity)
+            contract = ContractData(
+                gateway_name='MTApi',
+                symbol=comodity.Code(),
+                exchange=EXCHANGE_MT2VT[comodity.Exchange()],
+                name=comodity.Name(),
+                product=PRODUCT_MT2VT[comodity.Product()],
+                size=comodity.Multiple(),
+                pricetick=comodity.PriceTick())
+            self.on_event(EVENT_CONTRACT, contract)
+
+    def on_product_update(self, dataset):
+        exchange = dataset.Exchange()
+        product = dataset.Product()
+        status = dataset.GetFieldAsInt(103)
+        print('python on_product_update: ', exchange, product, status)
+
+    def on_commodity_update(self, dataset):
+        exchange = dataset.Exchange()
+        product = dataset.Product()
+        code = dataset.Code()
+        status = dataset.GetFieldAsInt(103)
+        print('python on_commodity_update: ', exchange, product, code, status)
         # tick = TickData(
         #     symbol=code,
         #     exchange=exchange)

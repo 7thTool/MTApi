@@ -10,7 +10,8 @@ namespace MTP {
 class ITDSpi
 {
 public:
-    //virtual void on_state_update(IDataSet* dataset, UpdateFlag flag) { }
+    //通知状态改变，包括0开始 1连接、2登陆、3完成、reason为0表示成功，其他表示错误，error为错误消息
+    virtual void on_state_update(int state, int reason, const char* error) {} 
 	virtual void on_user_update(IDataSet* dataset, UpdateFlag flag) { }
 	virtual void on_order_update(IDataSet* dataset, UpdateFlag flag) { }
 	virtual void on_trade_update(IDataSet* dataset, UpdateFlag flag) { }

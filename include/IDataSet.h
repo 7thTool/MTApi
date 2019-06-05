@@ -37,14 +37,10 @@ struct FieldInfo
 {
 	size_t id; //列ID
 	size_t type; //列类型
-};
 
-struct FieldInfoLess
-{
-    bool operator()(const FieldInfo& x, const FieldInfo& y) const
-    {
-		return x.id < y.id;
-	}
+    FieldInfo():id(0),type(0) {}
+    FieldInfo(size_t id, size_t type):id(id),type(type) {}
+    FieldInfo(const char* id, size_t type):id((size_t)id),type(type) {}
 };
 
 class IDataSet
@@ -95,10 +91,12 @@ class IDataSet
 	//取字段信息
 	virtual size_t GetFieldInfo(FieldInfo* info, size_t count) { return 0; }
     virtual size_t GetFieldInfoById(size_t id, FieldInfo* info = nullptr) { return 0; }
+    inline size_t GetFieldInfoById(const char* id, FieldInfo* info = nullptr) { return GetFieldInfoById((size_t)id, info); }
 	//获取字段值的数量
 	virtual size_t GetFieldSize(size_t id) { return 0; }
 	//获取字段值地址，如果同一字段既有快照又有序列的话，传-1取快照值地址，否则去序列值地址
 	virtual void* GetFieldValue(size_t id, size_t offset = 0) { return nullptr; }
+    inline void* GetFieldValue(const char* id, size_t offset = 0) { return GetFieldValue((size_t)id, offset); }
     // template<typename Target = double, typename Type = double>
     // inline Target GetFieldValueAs(size_t id, Target def = Target()) { 
     //     Type* ptr = (Type*)GetFieldValue(id, 0);
@@ -121,56 +119,62 @@ class IDataSet
         }
         return GetFieldValue(id, offset);
     }
-    template<typename Target = double>
-    inline Target GetFieldValueAs(size_t id, const Target& def = Target()) { 
-        return GetFieldValueAs(id, 0, def);
-    }
-    template<typename Target = double>
-    inline Target GetFieldValueAs(size_t id, size_t offset, const Target& def = Target()) { 
-        FieldInfo info = {0};
-        void* ptr = (void*)GetFieldValueEx(id, offset, &info);
-        if(ptr) {
-            switch(info.type)
-            {
-            case FIELD_TYPE_INT8:
-            {
-                return (Target)*(uint8_t *)ptr;
-            }
-            break;
-            case FIELD_TYPE_INT16:
-            {
-                 return (Target)*(uint16_t *)ptr;
-            }
-            break;
-            case FIELD_TYPE_INT32:
-            {
-                 return (Target)*(uint32_t *)ptr;
-            }
-            break;
-            case FIELD_TYPE_INT64:
-            {
-                 return (Target)*(int64_t *)ptr;
-            }
-            break;
-            case FIELD_TYPE_DOUBLE:
-            {
-                 return (Target)*(double *)ptr;
-            }
-            break;
-            case FIELD_TYPE_STRING:
-            {
-                //return XUtil::strto<Target>(std::string((const char*)ptr), def);
-            }
-            case FIELD_TYPE_DATASET:
-            default:
-            {
-                
-            }
-            break;
-            }
+	inline void* GetFieldValueEx(const char* id, size_t offset = 0, FieldInfo* info = nullptr) { 
+        if(info) {
+            GetFieldInfoById(id, info);
         }
-        return def; 
+        return GetFieldValue(id, offset);
     }
+    // template<typename Target = double>
+    // inline Target GetFieldValueAs(size_t id, const Target& def = Target()) { 
+    //     return GetFieldValueAs(id, 0, def);
+    // }
+    // template<typename Target = double>
+    // inline Target GetFieldValueAs(size_t id, size_t offset, const Target& def = Target()) { 
+    //     FieldInfo info = {0};
+    //     void* ptr = (void*)GetFieldValueEx(id, offset, &info);
+    //     if(ptr) {
+    //         switch(info.type)
+    //         {
+    //         case FIELD_TYPE_INT8:
+    //         {
+    //             return (Target)*(uint8_t *)ptr;
+    //         }
+    //         break;
+    //         case FIELD_TYPE_INT16:
+    //         {
+    //              return (Target)*(uint16_t *)ptr;
+    //         }
+    //         break;
+    //         case FIELD_TYPE_INT32:
+    //         {
+    //              return (Target)*(uint32_t *)ptr;
+    //         }
+    //         break;
+    //         case FIELD_TYPE_INT64:
+    //         {
+    //              return (Target)*(int64_t *)ptr;
+    //         }
+    //         break;
+    //         case FIELD_TYPE_DOUBLE:
+    //         {
+    //              return (Target)*(double *)ptr;
+    //         }
+    //         break;
+    //         case FIELD_TYPE_STRING:
+    //         {
+    //             //return XUtil::strto<Target>(std::string((const char*)ptr), def);
+    //         }
+    //         case FIELD_TYPE_DATASET:
+    //         default:
+    //         {
+                
+    //         }
+    //         break;
+    //         }
+    //     }
+    //     return def; 
+    // }
     // //按type返回字段值给value，改接口比GetFieldValue全面，但是性能上多了一次内存拷贝,而且有些是其他字段合成的临时值，也只能通过这个接口取到该值
     // virtual bool GetFieldValueAs(size_t type, void* value, size_t id, size_t offset = 0) { 
     //     size_t raw_type = 0;

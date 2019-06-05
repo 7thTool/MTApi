@@ -71,7 +71,7 @@ struct FieldValueWrapper : public FieldInfo
 		{
 			return nullptr;
 		}
-		else if (field_value.size == 1)
+		else if (field_value.max_size == 1)
 		{
 			switch (field_value.type)
 			{
@@ -138,7 +138,8 @@ struct FieldValueWrapper : public FieldInfo
 
 	void SetMaxSize(size_t size) {
 		auto &field_value = *this;
-		field_value.max_size = size;
+		if(field_value.size == 0 && field_value.max_size == 0)
+			field_value.max_size = size;
 	}
 
 	void * SetSize(size_t size) {
@@ -153,7 +154,11 @@ struct FieldValueWrapper : public FieldInfo
 			field_value.max_size = size + field_value.max_size;
 		}
 		field_value.size = size;
-		if (field_value.size == 1)
+		if (field_value.size == 0)
+		{
+			;
+		}
+		else if (field_value.max_size == 1)
 		{
 			switch (field_value.type)
 			{
@@ -265,7 +270,11 @@ struct FieldValueWrapper : public FieldInfo
 			Reset();
 		}
 		SetSize(size);
-		if (size == 1)
+		if (field_value.size == 0)
+		{
+			;
+		}
+		else if (field_value.max_size == 1)
 		{
 			switch (field_value.type)
 			{
@@ -368,7 +377,7 @@ struct FieldValueWrapper : public FieldInfo
 		{
 			;
 		}
-		else if (field_value.size == 1)
+		else if (field_value.max_size == 1)
 		{
 			switch (field_value.type)
 			{
@@ -635,7 +644,11 @@ class CStrDataSetWrapper : public BaseSet
 			field_num = dataset.GetFieldInfo(field_info, field_num);
 			for(size_t i = 0; i < field_num; i++)
 			{
-				field_values_[(const char*)field_info[i].id] = field_info[i];
+				//field_values_[(const char*)field_info[i].id] = field_info[i];
+				auto pr_insert = field_values_.insert(std::make_pair((const char*)field_info[i].id, field_info[i]));
+				if(pr_insert.second) {
+					pr_insert.first->second.id = (size_t)pr_insert.first->first.c_str();
+				}
 				size_t field_size = dataset.GetFieldSize(field_info[i].id);
 				SetFieldValue(field_info[i].id, dataset.GetFieldValue(field_info[i].id,0), field_size);
 			}
@@ -660,19 +673,28 @@ class CStrDataSetWrapper : public BaseSet
 		inline void Init(const std::initializer_list<FieldInfo>& list)
 		{
 			for (auto it = list.begin(); it != list.end(); ++it) {
-            	field_values_[(const char*)it->id] = *it;
+				auto pr_insert = field_values_.insert(std::make_pair((const char*)it->id, *it));
+				if(pr_insert.second) {
+					pr_insert.first->second.id = (size_t)pr_insert.first->first.c_str();
+				}
         	}
 		}
 		inline void Init(const FieldInfo* field_info, size_t count)
 		{
 			for (size_t i = 0; i < count; i++) {
-            	field_values_[(const char*)field_info[i].id] = field_info[i];
+				auto pr_insert = field_values_.insert(std::make_pair((const char*)field_info[i].id, field_info[i]));
+				if(pr_insert.second) {
+					pr_insert.first->second.id = (size_t)pr_insert.first->first.c_str();
+				}
         	}
 		}
 		inline void SetFieldInfo(const FieldInfo* field_info, size_t count = 1)
 		{
 			for (size_t i = 0; i < count; i++) {
-            	field_values_[(const char*)field_info[i].id] = field_info[i];
+            	auto pr_insert = field_values_.insert(std::make_pair((const char*)field_info[i].id, field_info[i]));
+				if(pr_insert.second) {
+					pr_insert.first->second.id = (size_t)pr_insert.first->first.c_str();
+				}
         	}
 		}
 

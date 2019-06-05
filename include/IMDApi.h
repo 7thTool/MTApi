@@ -9,10 +9,11 @@ namespace MTP {
 class IMDSpi
 {
 public:
-    //virtual void on_state_update(IDataSet* dataset) { }
-	virtual void on_exchange_update(IDataSet* dataset) { }
-	virtual void on_product_update(IDataSet* dataset) { }
-    virtual void on_commodity_update(IDataSet* dataset) { }
+    //通知状态改变，包括0开始 1连接、2登陆、3完成、reason为0表示成功，其他表示错误，error为错误消息
+    virtual void on_market_update(int state, int reason, const char* error) {} 
+    virtual void on_exchange_update(IDataSet* dataset) { } //通知市场信息已经变化，这里只在市场信息发生变化才会调用
+	virtual void on_product_update(IDataSet* dataset) { } //通知产品信息已经变化，这里只在产品信息发生变化才会调用
+    virtual void on_commodity_update(IDataSet* dataset) { } //通知商品信息已经变化，这里只在商品信息发生变化才会调用
 };
 
 /**

@@ -107,8 +107,8 @@ enum FIELDDEFINE {
 	IDF_Code,
 	IDF_Name,
 	IDF_Periods,
-	IDF_Digits,
-	IDF_PriceDigits,
+	IDF_Multiple,
+	IDF_PriceTick,
 	IDF_TradingDay,
 	IDF_TimeZone,
 	IDF_Status,
@@ -196,8 +196,8 @@ static const std::string IDFS_Product = std::to_string(IDF_Product);
 static const std::string IDFS_Code = std::to_string(IDF_Code);
 static const std::string IDFS_Name = std::to_string(IDF_Name);
 static const std::string IDFS_Periods = std::to_string(IDF_Periods);
-static const std::string IDFS_Digits = std::to_string(IDF_Digits);
-static const std::string IDFS_PriceDigits = std::to_string(IDF_PriceDigits);
+static const std::string IDFS_Multiple = std::to_string(IDF_Multiple);
+static const std::string IDFS_PriceTick = std::to_string(IDF_PriceTick);
 static const std::string IDFS_TradingDay = std::to_string(IDF_TradingDay);
 static const std::string IDFS_TimeZone = std::to_string(IDF_TimeZone);
 static const std::string IDFS_Status = std::to_string(IDF_Status);

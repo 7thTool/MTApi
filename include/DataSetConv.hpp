@@ -31,7 +31,7 @@ public:
         if(!dataset) {
             return def;
         }
-        FieldInfo info = {0};
+        FieldInfo info;
         void* ptr = (void*)dataset->GetFieldValueEx(id, offset, &info);
         if(ptr) {
             switch(info.type)
@@ -90,7 +90,7 @@ public:
         if(!dataset) {
             return def;
         }
-        FieldInfo info = {0};
+        FieldInfo info;
         void* ptr = (void*)dataset->GetFieldValueEx(id, offset, &info);
         if(ptr) {
             switch(info.type)
@@ -316,8 +316,35 @@ public:
         ss << R"(})";
         return ss.str();
     }
+};
 
-    std::string to_json_ex(IDataSet *dataset)
+class StrDataSetConv : public DataSetConv
+{
+    typedef DataSetConv Base;
+public:
+    using Base::Base;
+
+    template<typename Target = double>
+    inline Target to_number(IDataSet *dataset, const char* id, const Target& def = Target())
+    {
+        return to_number(dataset, id, 0, def);
+    }
+    template<typename Target = double>
+    inline Target to_number(IDataSet *dataset, const char* id, size_t offset, const Target& def = Target())
+    {
+        return Base::to_number(dataset, (size_t)id, offset, def); 
+    }
+
+    inline std::string to_string(IDataSet *dataset, const char* id, const std::string& def = std::string())
+    {
+        return to_string(dataset, id, 0, def);
+    }
+    inline std::string to_string(IDataSet *dataset, const char* id, size_t offset, const std::string& def = std::string())
+    {
+        return Base::to_string(dataset, (size_t)id, offset, def); 
+    }
+    
+    std::string to_json(IDataSet *dataset)
     {
         std::stringstream ss;
         ss << R"({)";

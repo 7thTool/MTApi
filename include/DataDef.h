@@ -60,32 +60,41 @@ enum FindFlag
 #define		MAX_CODE_LENGTH			14	//商品代码最大长度
 #define		MAX_NAME_LENGTH			31	//商品名称最大长度
 
-enum // 市场种类
-{
-	XMT_NONE		= 0,				// 无/未知/临时
-	XMT_STOCK,							// 证券市场
-	XMT_FUTURES,						// 期货市场
-	XMT_OPTION,							// 期权市场
-	XMT_FOREX,							// 外汇
-	XMT_SPOT,							// 现货
-	XMT_INFO,							// 资讯信息
-	XMT_MASK		= 0X0F,
-};
+// # Chinese
+#define EXCHANGE_CFFEX "CFFEX"         //# China Financial Futures Exchange
+#define EXCHANGE_SHFE "SHFE"           //# Shanghai Futures Exchange
+#define EXCHANGE_CZCE "CZCE"           //# Zhengzhou Commodity Exchange
+#define EXCHANGE_DCE "DCE"             //# Dalian Commodity Exchange
+#define EXCHANGE_INE "INE"             //# Shanghai International Energy Exchange
+#define EXCHANGE_SSE "SSE"             //# Shanghai Stock Exchange
+#define EXCHANGE_SZSE "SZSE"           //# Shenzhen Stock Exchange
+//#define EXCHANGE_SGE "SGE"             //# Shanghai Gold Exchange
+//#define EXCHANGE_WXE "WXE"             //# Wuxi Steel Exchange
 
-//股票市场
-//XMT_STOCK
-#define XSE_SH	"SSE"	//上海证券交易所
-#define XSE_SZ	"SZSE"	//深圳证券交易所
+//     # Global
+//     SMART = "SMART"         # Smart Router for US stocks
+//     NYMEX = "NYMEX"         # New York Mercantile Exchange
+//     GLOBEX = "GLOBEX"       # Globex of CME
+//     IDEALPRO = "IDEALPRO"   # Forex ECN of Interactive Brokers
+//     CME = "CME"             # Chicago Mercantile Exchange
+//     ICE = "ICE"             # Intercontinental Exchange
+//     SEHK = "SEHK"           # Stock Exchange of Hong Kong
+//     HKFE = "HKFE"           # Hong Kong Futures Exchange
+//     SGX = "SGX"             # Singapore Global Exchange
+//     CBOT = "CBT"            # Chicago Board of Trade
+//     DME = "DME"             # Dubai Mercantile Exchange
+//     EUREX = "EUX"           # Eurex Exchange
+//     APEX = "APEX"           # Asia Pacific Exchange
+//     LME = "LME"             # London Metal Exchange
+//     BMD = "BMD"             # Bursa Malaysia Derivatives
+//     TOCOM = "TOCOM"         # Tokyo Commodity Exchange
+//     EUNX = "EUNX"           # Euronext Exchange
 
-//期货市场
-//XMT_FUTURES
-
-#define XFE_SH			"SHFE"	//上海期货交易所
-#define XFE_NY			"INE"	//上海国际能源交易中心股份有限公司
-#define XFE_DL			"DCE"	//大连商品交易所
-#define XFE_ZZ			"CZCE"	//郑州商品交易所
-#define XFE_CF			"CFFEX"	//中国金融交易所
-
+//     # CryptoCurrency
+//     BITMEX = "BITMEX"
+//     OKEX = "OKEX"
+//     HUOBI = "HUOBI"
+//     BITFINEX = "BITFINEX"
 /////////////////////////////////////////////////////////////////////////
 ///交易状态类型
 /////////////////////////////////////////////////////////////////////////
@@ -144,6 +153,18 @@ typedef struct tagPeriodsInfo
 		MARKET_COMMODITY_TREND_CHANGED = MARKET_COMMODITY_PRICE_CHANGED | MARKET_COMMODITY_VOLUME_CHANGED,
 	};
 
+//Product class.
+#define PRODUCT_STOCK 'S' //"股票"
+#define PRODUCT_FUTURES 'F'// = "期货"
+#define PRODUCT_OPTION 'O'// = "期权"
+#define PRODUCT_INDEX 'I'// = "指数"
+#define PRODUCT_FOREX 'X'// = "外汇"
+#define PRODUCT_SPOT 'P'// = "现货"
+#define PRODUCT_ETF 'E'// = "ETF"
+#define PRODUCT_BOND 'B'// = "债券"
+#define PRODUCT_WARRANT 'W'// = "权证"
+#define PRODUCT_SPREAD 'D'// = "价差"
+#define PRODUCT_FUND 'U'// = "基金"
 
 enum
 {
@@ -235,6 +256,41 @@ enum PRICETYPE
 #define SECOND_OF_PERIOD_MONTH		    60*60*24*30
 #define SECOND_OF_PERIOD_SEASON		    60*60*24*90
 #define SECOND_OF_PERIOD_YEAR		    60*60*24*365
+
+//Direction of order/trade/position.
+#define DIRECTION_LONG '0'
+#define DIRECTION_SHORT '1'
+#define DIRECTION_NET '2'
+
+//Offset of order/trade.
+#define OFFSET_OPEN '0'
+#define OFFSET_CLOSE '1'
+#define OFFSET_CLOSETODAY '2'
+#define OFFSET_CLOSEYESTERDAY '3'
+
+//Order status.
+#define ORDER_STATUS_SUBMITTING '0'
+#define ORDER_STATUS_NOTTRADED '1'
+#define ORDER_STATUS_PARTTRADED '2'
+#define ORDER_STATUS_ALLTRADED '3'
+#define ORDER_STATUS_CANCELLED '4'
+#define ORDER_STATUS_REJECTED '5'
+
+//Order type.
+#define ORDER_LIMIT '0'
+#define ORDER_MARKET '1'
+#define ORDER_STOP '2'
+#define ORDER_FAK '3'
+#define ORDER_FOK '4'
+
+//Option type.
+#define OPTION_CALL '0'
+#define OPTION_PUT '1'
+
+//Currency.
+#define CURRENCY_USD '0'
+#define CURRENCY_HKD '1'
+#define CURRENCY_CNY '2'
 
 #if defined(__cplusplus)
 
