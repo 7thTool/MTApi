@@ -183,7 +183,7 @@ class CMTApi:
 
     def Subscribe(self, req: SubscribeRequest):
         """"""
-        self.api.Subscribe(req)
+        self.api.Subscribe(req.exchange.value, req.symbol)
 
     def SendOrder(self, req: OrderRequest):
         """"""
@@ -223,13 +223,14 @@ class CMTApi:
         for comodity in all_commoditys:
             print('python commodity: ', comodity)
             contract = ContractData(
-                gateway_name='MTApi',
                 symbol=comodity.Code(),
                 exchange=EXCHANGE_MT2VT[comodity.Exchange()],
                 name=comodity.Name(),
-                product=PRODUCT_MT2VT[comodity.Product()],
+                product=PRODUCT_MT2VT[comodity.ProductType()],
                 size=comodity.Multiple(),
-                pricetick=comodity.PriceTick())
+                pricetick=comodity.PriceTick(),
+                gateway_name='MTApi'
+            )
             self.on_event(EVENT_CONTRACT, contract)
 
     def on_product_update(self, dataset):
@@ -244,11 +245,43 @@ class CMTApi:
         code = dataset.Code()
         status = dataset.GetFieldAsInt(103)
         print('python on_commodity_update: ', exchange, product, code, status)
-        # tick = TickData(
-        #     symbol=code,
-        #     exchange=exchange)
-        # self.on_event(EVENT_TICK, tick)
-        # self.on_event(EVENT_TICK + tick.vt_symbol, tick)
+        
+        date = dataset.Date()[0]
+        time = dataset.Time()[0]
+        volume=dataset.Volume()[0]
+        last_price=dataset.Close()[0]
+        limit_up=dataset.UpperPrice()[0]
+        limit_down=dataset.LowerPrice()[0]
+        open_price=dataset.Open()[0]
+        high_price=dataset.High()[0]
+        low_price=dataset.Low()[0]
+        pre_close=dataset.PreClose()[0]
+        bid_price_1=dataset.BidPrice()[0]
+        ask_price_1=dataset.AskPrice()[0]
+        bid_volume_1=dataset.BidVolume()[0]
+        ask_volume_1=dataset.AskVolume()[0]
+        timestamp = f"{date} {time}"
+        tick = TickData(
+            symbol=code,
+            exchange=EXCHANGE_MT2VT[exchange],
+            datetime=datetime.strptime(timestamp, "%Y%m%d %H%M%S"),
+            name=code,
+            volume=volume,
+            last_price=last_price,
+            limit_up=limit_up,
+            limit_down=limit_down,
+            open_price=open_price,
+            high_price=high_price,
+            low_price=low_price,
+            pre_close=pre_close,
+            bid_price_1=bid_price_1,
+            ask_price_1=ask_price_1,
+            bid_volume_1=bid_volume_1,
+            ask_volume_1=ask_volume_1,
+            gateway_name='MTApi'
+        )
+        self.on_event(EVENT_TICK, tick)
+        self.on_event(EVENT_TICK + tick.vt_symbol, tick)
 
     def sma(self, d, n, array=False):
         """
