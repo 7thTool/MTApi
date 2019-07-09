@@ -41,6 +41,17 @@ enum UpDownMode
 	WORK_MODE_MIX   = 3,
 };
 
+enum XmlFlag
+{
+	XML_FLAG_JSON_STRING = 0, //默认字符串
+	XML_FLAG_JSON_FILE,
+	XML_FLAG_XML_STRING,
+	XML_FLAG_XML_FILE,
+	XML_FLAG_PTREE,
+	XML_FLAG_DATASET,
+	XML_FLAG_STR_DATASET,
+};
+
 enum UpdateFlag 
 {
 	Add 			= 0,

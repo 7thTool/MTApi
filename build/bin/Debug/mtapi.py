@@ -163,15 +163,17 @@ class CMTApi:
                 "UserID": "113334",
                 "Password": "861116",
                 "BrokerID": "9999",
+                "InvestorID":"",
+                "UserProductInfo":"",
+                "AuthCode":"0000000000000000",
+                "AppID":"simnow_client_test",
                 "FrontAddress": [
-                    "tcp://180.168.146.187:10000",
-                    "tcp://180.168.146.187:10001",
-                    "tcp://218.202.237.33:10002"
+                    "tcp://180.168.146.187:10101",
+                    "tcp://218.202.237.33:10102"
                 ],
                 "MdFrontAddress": [
-                    "tcp://180.168.146.187:10010",
-                    "tcp://180.168.146.187:10011",
-                    "tcp://218.202.237.33:10012"
+                    "tcp://180.168.146.187:10111",
+                    "tcp://218.202.237.33:10112"
                 ]
             }
         }
@@ -260,7 +262,7 @@ class CMTApi:
         ask_price_1=dataset.AskPrice()[0]
         bid_volume_1=dataset.BidVolume()[0]
         ask_volume_1=dataset.AskVolume()[0]
-        timestamp = f"{date} {time}"
+        timestamp = f"{date:08d} {time:06d}"
         tick = TickData(
             symbol=code,
             exchange=EXCHANGE_MT2VT[exchange],

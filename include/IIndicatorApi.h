@@ -34,13 +34,13 @@ public:
 	virtual bool Start(char* xml, int xmlflag = 0) = 0;
 	virtual void Stop() = 0;
 
-	virtual void on_exchange_update(IDataSet* dataset) = 0;
-	virtual void on_product_update(IDataSet* dataset) = 0;
-    virtual void on_commodity_update(IDataSet* dataset) = 0;
+	virtual void on_exchange_update(char* xml, int xmlflag) = 0;
+	virtual void on_product_update(char* xml, int xmlflag) = 0;
+    virtual void on_commodity_update(char* xml, int xmlflag) = 0;
 
-    virtual void on_user_update(IDataSet* dataset, UpdateFlag flag) = 0;
-	virtual void on_order_update(IDataSet* dataset, UpdateFlag flag) = 0;
-	virtual void on_trade_update(IDataSet* dataset, UpdateFlag flag) = 0;
+    virtual void on_user_update(char* xml, int xmlflag) = 0;
+	virtual void on_order_update(char* xml, int xmlflag) = 0;
+	virtual void on_trade_update(char* xml, int xmlflag) = 0;
 
 protected:
 	virtual ~IIndicatorApi() {}
