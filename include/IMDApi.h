@@ -24,10 +24,7 @@ class MTAPI_API IMDApi
 public:
 	static IMDApi& Instance();
 
-    virtual void RegisterSpi(IMDSpi* pSpi) = 0;
-
-    //virtual void Subscribe(char* xml, int xmlflag = 0) = 0;
-	//virtual void UnSubscribe(char* xml, int xmlflag = 0) = 0;
+    virtual void register_spi(IMDSpi* spi, int spiflag) = 0;
     
 protected:
 	virtual ~IMDApi() {}

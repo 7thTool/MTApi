@@ -10,11 +10,9 @@ namespace MTP {
 class ITDSpi
 {
 public:
-    //通知状态改变，包括0开始 1连接、2登陆、3完成、reason为0表示成功，其他表示错误，error为错误消息
-    virtual void on_state_update(int state, int reason, const char* error) {} 
-	virtual void on_user_update(char* xml, int xmlflag = 0) { }
-	virtual void on_order_update(char* xml, int xmlflag = 0) { }
-	virtual void on_trade_update(char* xml, int xmlflag = 0) { }
+	virtual void on_user_update(size_t peer, char* xml, int xmlflag = 0) { }
+	virtual void on_push(size_t peer, const char* method, char* xml, int xmlflag = 0) = 0;
+	virtual void on_response(size_t peer, const char* method, char* xml, int xmlflag = 0, size_t id = 0) { }
 };
 
 /**
@@ -25,11 +23,12 @@ class MTAPI_API ITDApi
 public:
 	static ITDApi& Instance();
 
-    virtual void RegisterSpi(ITDSpi* pSpi) = 0;
+    virtual void register_spi(ITDSpi* spi, int spiflag) = 0;
 
-    virtual void AddUser(char* xml, int xmlflag = 0) = 0;
-    virtual void RemoveUser(char* xml, int xmlflag = 0) = 0;
-	virtual void Request(char* xml, int xmlflag = 0) = 0;
+    virtual void add_user(size_t peer, char* xml, int xmlflag = 0) = 0;
+    virtual void remove_user(size_t peer, char* xml, int xmlflag = 0) = 0;
+
+	virtual void request(size_t peer, const char* method, char* xml, int xmlflag = 0, size_t id = 0) = 0;
     
 protected:
 	virtual ~ITDApi() {}
